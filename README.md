@@ -2,7 +2,7 @@
 
 Tool to check IoCs against various APIs. Prints a detailed report and a summary table on the cli.
 
-<img width="725" alt="ioc_checker" src="https://user-images.githubusercontent.com/44299200/164562386-08a9dc2d-1e43-4ba4-b5a0-04f80fe4e30b.png">
+<img width="722" alt="ioc_checker" src="https://user-images.githubusercontent.com/44299200/164659861-2c5ea5dd-0b45-4283-adfa-f8a8fdce699a.png">
 
 For the tool to work properly, you need to register on the following services and generate API keys:
 - https://virustotal.com
