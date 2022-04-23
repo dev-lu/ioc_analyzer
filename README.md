@@ -29,8 +29,10 @@ Supported IoC types and their implemented services:
  - Alienvault
  - THREATfox
 
-<img width="722" alt="ioc_analyser" src="https://user-images.githubusercontent.com/44299200/164659861-2c5ea5dd-0b45-4283-adfa-f8a8fdce699a.png">
+Example output for an ip address:
+![ioc_analyzer_ip](https://user-images.githubusercontent.com/44299200/164914835-2a94df99-9754-4866-b1d1-59915b953665.png)
 
+Example output for a hash:
 ![ioc_analyzer](https://user-images.githubusercontent.com/44299200/164914795-9a7a879e-c38c-4526-9d69-3cae6106ec73.png)
 
 
