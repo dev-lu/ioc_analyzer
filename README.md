@@ -1,8 +1,8 @@
 # IoC analyzer
 
-Tool to check IoCs against various APIs. Prints a detailed report and a summary table on the cli.
+Tool to analyze IoCs with various APIs. Prints a detailed report and a summary table on the cli.
 IoC type is detected automatically.
-Supported IoC types and their implemented services:
+## Supported IoC types and implemented services:
 ### IP addresses
  - AbuseIPDB
  - IPQualityScore
