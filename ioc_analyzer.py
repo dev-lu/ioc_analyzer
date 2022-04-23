@@ -634,6 +634,14 @@ if __name__ == "__main__":
             threatfox_ip_check(ioc, config('THREATFOX_APIKEY'))
         except Exception as e:
             print("Alienvault OTX error \n========================\n")
+    
+    else:
+        table.field_names = ["IoC type: Unkown", str(ioc), ""]
+        table.add_row([
+                    "Error",
+                    "IoC type could not be detected",
+                    white
+                ])
 
     table.align = "l"
     print(table)
