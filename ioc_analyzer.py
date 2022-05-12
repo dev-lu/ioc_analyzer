@@ -250,8 +250,8 @@ def blocklist_de_ip_check(ip):
     url = "http://api.blocklist.de/api.php?"
     endpoint = "ip="
     
-    respose = requests.get(url=url + endpoint + ip)
-    result = respose.text.replace("<br />", " ")
+    response = requests.get(url=url + endpoint + ip)
+    result = response.text.replace("<br />", " ")
     attacks = re.search('attacks: (\d+)', result).group(1)
     reports = re.search('reports: (\d+)', result).group(1)
     result_dict = {
@@ -264,7 +264,7 @@ def blocklist_de_ip_check(ip):
     blocklist_attacks = result_dict["attacks"]
     blocklist_reports = result_dict["reports"]
     
-    if respose.status_code == 200:
+    if response.status_code == 200:
         if int(blocklist_attacks)<1 and int(blocklist_reports)<1:
             table.add_row([
                 "Blocklist.de", 
@@ -279,7 +279,7 @@ def blocklist_de_ip_check(ip):
             ])
     else:
         print("Error while checking for Blocklist.de results:")
-        print(respose.text)
+        print(response.text)
 
 
 def threatfox_ip_check(ip, apikey):
@@ -533,6 +533,25 @@ def maltiverse_ip_check(ip, apikey):
         table.add_row(["ISP", ip_isp, white])
 
 
+def search_twitter(ioc:str):
+    import tweepy as tw
+    twitter_bearer_token = config('TWITTER_BEARER')
+    client = tw.Client(bearer_token=twitter_bearer_token)
+
+    # Define search query
+    query = f'{ioc} -is:retweet'
+    print("- Top 50 Twitter results: -\n")
+    # get tweets from API
+    tweets = client.search_recent_tweets(query=query, tweet_fields=['context_annotations', 'created_at'], max_results=100)
+    # print tweets
+    if tweets.data:
+        for tweet in tweets.data:
+            print(tweet.text)
+            print("\n---\n")
+    else: print("No tweets within the last 7 days\n\n")
+    print("\n" + "========================" + "\n")
+
+    
 if __name__ == "__main__":
     # Match IP address
     if re.match(r'[0-9]+(?:\.[0-9]+){3}', ioc):
@@ -565,6 +584,10 @@ if __name__ == "__main__":
             maltiverse_ip_check(ioc, config('MALTIVERSE_APIKEY'))
         except Exception as e:
             print("Maltiverse error \n========================\n")
+        try:
+            search_twitter(ioc)
+        except Exception as e:
+            print("Twitter error \n========================\n")
             
     # Match domain
     elif re.match(r'(?:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\.)+[a-z0-9][a-z0-9-]{0,61}[a-z0-9]', ioc):
@@ -577,8 +600,12 @@ if __name__ == "__main__":
             alienvaultotx(ioc, "domain", config('ALIENVAULTOTX_APIKEY'))
         except Exception as e:
             print("Alienvault OTX error \n========================\n")
-        
+        try:
+            search_twitter(ioc)
+        except Exception as e:
+            print("Twitter error \n========================\n")
 
+    # Match URL
     elif re.match(r'https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()!@:%_\+.~#?&\/\/=]*)', ioc):
         table.field_names = ["IoC type: URL", str(ioc), ""]
         try:
@@ -586,6 +613,10 @@ if __name__ == "__main__":
             virustotal(ioc, "urls", config('VIRUSTOTAL_APIKEY'))
         except Exception as e:
             print("Virustotal error \n========================\n" + str(e))
+        try:
+            search_twitter(ioc)
+        except Exception as e:
+            print("Twitter error \n========================\n")
         
     # Match MD5
     elif re.match(r'(?i)(?<![a-z0-9])[a-f0-9]{32}(?![a-z0-9])', ioc):
@@ -602,6 +633,10 @@ if __name__ == "__main__":
             threatfox_ip_check(ioc, config('THREATFOX_APIKEY'))
         except Exception as e:
             print("Alienvault OTX error \n========================\n")
+        try:
+            search_twitter(ioc)
+        except Exception as e:
+            print("Twitter error \n========================\n")
      
     # Match SHA1       
     elif re.match(r'(?i)(?<![a-z0-9])[a-f0-9]{40}(?![a-z0-9])', ioc):
@@ -618,6 +653,10 @@ if __name__ == "__main__":
             threatfox_ip_check(ioc, config('THREATFOX_APIKEY'))
         except Exception as e:
             print("Alienvault OTX error \n========================\n")
+        try:
+            search_twitter(ioc)
+        except Exception as e:
+            print("Twitter error \n========================\n")
          
     # Match SHA256
     elif re.match(r'(?i)(?<![a-z0-9])[a-f0-9]{64}(?![a-z0-9])', ioc):
@@ -634,6 +673,10 @@ if __name__ == "__main__":
             threatfox_ip_check(ioc, config('THREATFOX_APIKEY'))
         except Exception as e:
             print("Alienvault OTX error \n========================\n")
+        try:
+            search_twitter(ioc)
+        except Exception as e:
+            print("Twitter error \n========================\n")
     
     else:
         table.field_names = ["IoC type: Unkown", str(ioc), ""]
