@@ -39,9 +39,7 @@ IoC type is detected automatically.
 ![ioc_analyzer_ip](https://user-images.githubusercontent.com/44299200/164914835-2a94df99-9754-4866-b1d1-59915b953665.png)
 
 ### Example output for a hash:
-<img width="753" alt="Bildschirmfoto 2022-05-13 um 13 45 22" src="https://user-images.githubusercontent.com/44299200/168277000-c907c55b-34a8-41cd-b611-cfb99f04edb4.png">
-
-
+<img width="813" alt="Bildschirmfoto 2022-05-13 um 13 48 55" src="https://user-images.githubusercontent.com/44299200/168277208-960c7d5e-fcde-459e-b279-4fcdad2e5001.png">
 
 
 For this tool to work properly, you need to register on the following services and generate API keys:
