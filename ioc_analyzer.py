@@ -559,7 +559,7 @@ def search_twitter(ioc:str):
             table.add_row(["Twitter", f"{len(tweets.data)} tweet(s)", green])
     else: 
         print("No tweets within the last 7 days\n\n")
-        table.add_row(["Twitter", f"{len(tweets.data)} tweet(s)", yellow])
+        table.add_row(["Twitter", "0 tweet(s)", yellow])
     print("\n" + "========================" + "\n")
 
     
