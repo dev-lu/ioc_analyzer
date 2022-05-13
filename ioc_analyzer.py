@@ -538,17 +538,28 @@ def search_twitter(ioc:str):
     twitter_bearer_token = config('TWITTER_BEARER')
     client = tw.Client(bearer_token=twitter_bearer_token)
 
-    # Define search query
+    # Define search query and exclude retweets
     query = f'{ioc} -is:retweet'
-    print("- Top 50 Twitter results: -\n")
+    print("- Top 15 Twitter results: -\n")
     # get tweets from API
-    tweets = client.search_recent_tweets(query=query, tweet_fields=['context_annotations', 'created_at'], max_results=100)
+    tweets = client.search_recent_tweets(
+        query=query, 
+        tweet_fields=['context_annotations', 'created_at', 'author_id', 'public_metrics'], 
+        max_results=15)
     # print tweets
     if tweets.data:
         for tweet in tweets.data:
-            print(tweet.text)
+            author = client.get_user(id=tweet.author_id)  # find username by id
+            print(f"Author: {author.data.username}")
+            print(f"Created at:  {tweet.created_at}")
+            print(f"Likes: {tweet.public_metrics['like_count']}")
+            print(f"Retweets: {tweet.public_metrics['retweet_count']}\n")
+            print(f"{tweet.text}")
             print("\n---\n")
-    else: print("No tweets within the last 7 days\n\n")
+            table.add_row(["Twitter", f"{len(tweets.data)} tweet(s)", green])
+    else: 
+        print("No tweets within the last 7 days\n\n")
+        table.add_row(["Twitter", f"{len(tweets.data)} tweet(s)", yellow])
     print("\n" + "========================" + "\n")
 
     
