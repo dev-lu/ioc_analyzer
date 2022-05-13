@@ -11,23 +11,29 @@ IoC type is detected automatically.
  - Blocklist.de
  - THREATfox (abuse.ch)
  - Maltiverse
+ - Twitter
 ### Domains
  - Virustotal
  - Alienvault
+ - Twitter
 ### URLs
  - Virustotal
+ - Twitter
 ### MD5 hashes
  - Virustotal
  - Alienvault
  - THREATfox
+ - Twitter
 ### SHA1 hashes
  - Virustotal
  - Alienvault
  - THREATfox
+ - Twitter
 ### SHA256 hashes
  - Virustotal
  - Alienvault
  - THREATfox
+ - Twitter
 
 ### Example output for an ip address:
 ![ioc_analyzer_ip](https://user-images.githubusercontent.com/44299200/164914835-2a94df99-9754-4866-b1d1-59915b953665.png)
@@ -44,5 +50,4 @@ For this tool to work properly, you need to register on the following services a
 - https://threatfox.abuse.ch
 - https://www.ipqualityscore.com
 - https://maltiverse.com
-
-
+- https://developer.twitter.com
