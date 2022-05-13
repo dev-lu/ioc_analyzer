@@ -540,7 +540,7 @@ def search_twitter(ioc:str):
 
     # Define search query and exclude retweets
     query = f'{ioc} -is:retweet'
-    print("- Top 15 Twitter results: -\n")
+    print("- Top 15 Twitter results -\n")
     # get tweets from API
     tweets = client.search_recent_tweets(
         query=query, 
@@ -556,7 +556,7 @@ def search_twitter(ioc:str):
             print(f"Retweets: {tweet.public_metrics['retweet_count']}\n")
             print(f"{tweet.text}")
             print("\n---\n")
-            table.add_row(["Twitter", f"{len(tweets.data)} tweet(s)", green])
+        table.add_row(["Twitter", f"{len(tweets.data)} tweet(s)", green])
     else: 
         print("No tweets within the last 7 days\n\n")
         table.add_row(["Twitter", "0 tweet(s)", yellow])
