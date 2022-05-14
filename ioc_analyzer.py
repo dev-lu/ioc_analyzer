@@ -1,7 +1,7 @@
 #==============================================
 # Tool to check IoCs againt various threat intelligences.
 # IoC type will be detected automatically.
-# Implmented services: AbuseIPDB, IPQualityScore, Alienvault, Virustotal, Blocklist.de, Maltiverse
+# Implmented services: AbuseIPDB, IPQualityScore, Alienvault, Virustotal, Blocklist.de, Maltiverse, Twitter
 # Author: https://github.com/dev-lu
 #==============================================
 from decouple import config, RepositoryEnv
