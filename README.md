@@ -42,12 +42,14 @@ IoC type is detected automatically.
  - Reddit
 
 ### Example output for an ip address:
-<img width="555" alt="Bildschirmfoto 2022-05-13 um 14 45 16" src="https://user-images.githubusercontent.com/44299200/168286279-5069258a-3063-44d7-9d91-50e88eb7a10d.png">
+![ioca_ip](https://user-images.githubusercontent.com/44299200/168872804-4e485af3-171f-4e58-8c3c-fecbec3208d8.png)
+
 
 
 ### Example output for a hashes:
-![iaca_reddit](https://user-images.githubusercontent.com/44299200/168870372-909c1ef3-81be-4198-9606-bd9d075a2ef3.png)
-![ioca_twitter](https://user-images.githubusercontent.com/44299200/168870377-6829c754-2397-4250-9300-9b2a47b3f0b3.png)
+![ioca_reddit](https://user-images.githubusercontent.com/44299200/168872781-6489932d-9a46-4503-8089-c5792d209e95.png)
+![ioca_twitter](https://user-images.githubusercontent.com/44299200/168872786-ef3c2a87-282b-4145-8350-b1831673b21b.png)
+
 
 
 For this tool to work properly, you need to register on the following services and generate API keys:
