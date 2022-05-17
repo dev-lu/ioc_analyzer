@@ -20,7 +20,7 @@ ioc = str(input('Enter IoC:\n'))
 
 table           = PrettyTable()
 table.header    = True
-table.title     = Style.BRIGHT + "- Result summary -" + Style.RESET_ALL
+table.title     = f"{Style.BRIGHT} - Result summary - {Style.RESET_ALL}"
 # Colors for table
 green   = Back.GREEN    + "     " + Style.RESET_ALL
 red     = Back.RED      + "     " + Style.RESET_ALL
@@ -414,7 +414,7 @@ def search_reddit(ioc:str):
         client_secret = config('REDDIT_CLIENT_SECRET'),
         password = config('REDDIT_PASSWORD'),
         user_agent = "python",
-        username = "username"
+        username = config('REDDIT_USERNAME')
     )
     
     print("\n\n===== Top 15 Reddit results =====\n")
@@ -583,10 +583,10 @@ if __name__ == "__main__":
         try: 
             search_reddit(ioc)
         except: 
-            print("\n========== Reddit error ==========\n"))
+            print("\n========== Reddit error ==========\n")
             
     else:
-        table.field_names = ["IoC type: Unkown", str(ioc), ""]
+        table.field_names = ["IoC type: Unknown", str(ioc), ""]
         table.add_row(["Error", "IoC type could not be detected", white])
 
     table.align = "l"
