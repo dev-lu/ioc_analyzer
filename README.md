@@ -46,7 +46,7 @@ IoC type is detected automatically.
 
 
 
-### Example output for a hashes:
+### Example output for hashes:
 ![ioca_reddit](https://user-images.githubusercontent.com/44299200/168872781-6489932d-9a46-4503-8089-c5792d209e95.png)
 ![ioca_twitter](https://user-images.githubusercontent.com/44299200/168872786-ef3c2a87-282b-4145-8350-b1831673b21b.png)
 
