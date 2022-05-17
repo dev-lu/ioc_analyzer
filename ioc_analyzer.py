@@ -4,6 +4,7 @@
 # Implmented services: AbuseIPDB, IPQualityScore, Alienvault, Virustotal, Blocklist.de, Maltiverse, Twitter
 # Author: https://github.com/dev-lu
 #==============================================
+from datetime import datetime
 from decouple import config, RepositoryEnv
 from colorama import Fore, Back, Style
 from prettytable import PrettyTable
@@ -404,7 +405,36 @@ def search_twitter(ioc:str):
         print("No tweets within the last 7 days\n\n")
         table.add_row(["Twitter", "0 tweet(s)", green])
 
+        
+def search_reddit(ioc:str):
+    import praw
+    ioc = str(ioc)
+    reddit = praw.Reddit(
+        client_id = config('REDDIT_CLIENT_ID'),
+        client_secret = config('REDDIT_CLIENT_SECRET'),
+        password = config('REDDIT_PASSWORD'),
+        user_agent = "python",
+        username = "username"
+    )
     
+    print("\n\n===== Top 15 Reddit results =====\n")
+
+    reddit_sum = sum(1 for x in reddit.subreddit("all").search(ioc))
+    
+    if reddit_sum:
+        for submission in reddit.subreddit("all").search(ioc, sort="new", limit=15):
+            print("")
+            print("Autor: " + str(submission.author))
+            print("Created at: " + datetime.fromtimestamp(int(submission.created_utc)).strftime('%Y-%m-%d %H:%M:%S'))
+            print("Link: " + str(submission.url))
+            print(submission.title)
+            print("\n---\n")
+        table.add_row(["Reddit", f"{reddit_sum} post(s)", yellow])
+    else: 
+        print("No results\n\n")
+        table.add_row(["Reddit", "0 posts", green])
+        
+        
 if __name__ == "__main__":
     # Match IP address
     if re.match(r'[0-9]+(?:\.[0-9]+){3}', ioc):
@@ -440,7 +470,11 @@ if __name__ == "__main__":
         try: 
             search_twitter(ioc)
         except: 
-            print(print("\n========== Twitter error ==========\n"))
+            print("\n========== Twitter error ==========\n")
+        try: 
+            search_reddit(ioc)
+        except: 
+            print("\n========== Reddit error ==========\n")
             
     # Match domain
     elif re.match(r'(?:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\.)+[a-z0-9][a-z0-9-]{0,61}[a-z0-9]', ioc):
@@ -456,7 +490,11 @@ if __name__ == "__main__":
         try: 
             search_twitter(ioc)
         except: 
-            print(print("\n========== Twitter error ==========\n"))
+            print("\n========== Twitter error ==========\n")
+        try: 
+            search_reddit(ioc)
+        except: 
+            print("\n========== Reddit error ==========\n")
         
     # Match URL
     elif re.match(r'https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()!@:%_\+.~#?&\/\/=]*)', ioc):
@@ -469,7 +507,11 @@ if __name__ == "__main__":
         try: 
             search_twitter(ioc)
         except: 
-            print(print("\n========== Twitter error ==========\n"))
+            print("\n========== Twitter error ==========\n")
+        try: 
+            search_reddit(ioc)
+        except: 
+            print("\n========== Reddit error ==========\n")
         
     # Match MD5
     elif re.match(r'(?i)(?<![a-z0-9])[a-f0-9]{32}(?![a-z0-9])', ioc):
@@ -489,7 +531,11 @@ if __name__ == "__main__":
         try: 
             search_twitter(ioc)
         except: 
-            print(print("\n========== Twitter error ==========\n"))
+            print("\n========== Twitter error ==========\n")
+        try: 
+            search_reddit(ioc)
+        except: 
+            print("\n========== Reddit error ==========\n")
      
     # Match SHA1       
     elif re.match(r'(?i)(?<![a-z0-9])[a-f0-9]{40}(?![a-z0-9])', ioc):
@@ -509,7 +555,11 @@ if __name__ == "__main__":
         try: 
             search_twitter(ioc)
         except: 
-            print(print("\n========== Twitter error ==========\n"))
+            print("\n========== Twitter error ==========\n")
+        try: 
+            search_reddit(ioc)
+        except: 
+            print("\n========== Reddit error ==========\n")
          
     # Match SHA256
     elif re.match(r'(?i)(?<![a-z0-9])[a-f0-9]{64}(?![a-z0-9])', ioc):
@@ -529,7 +579,11 @@ if __name__ == "__main__":
         try: 
             search_twitter(ioc)
         except: 
-            print(print("\n========== Twitter error ==========\n"))
+            print("\n========== Twitter error ==========\n")
+        try: 
+            search_reddit(ioc)
+        except: 
+            print("\n========== Reddit error ==========\n"))
             
     else:
         table.field_names = ["IoC type: Unkown", str(ioc), ""]
