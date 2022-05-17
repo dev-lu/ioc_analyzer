@@ -45,8 +45,9 @@ IoC type is detected automatically.
 <img width="555" alt="Bildschirmfoto 2022-05-13 um 14 45 16" src="https://user-images.githubusercontent.com/44299200/168286279-5069258a-3063-44d7-9d91-50e88eb7a10d.png">
 
 
-### Example output for a hash:
-<img width="779" alt="Bildschirmfoto 2022-05-13 um 13 50 29" src="https://user-images.githubusercontent.com/44299200/168277450-d882b06d-9514-49b8-9d11-1dff2043d903.png">
+### Example output for a hashes:
+![iaca_reddit](https://user-images.githubusercontent.com/44299200/168870372-909c1ef3-81be-4198-9606-bd9d075a2ef3.png)
+![ioca_twitter](https://user-images.githubusercontent.com/44299200/168870377-6829c754-2397-4250-9300-9b2a47b3f0b3.png)
 
 
 For this tool to work properly, you need to register on the following services and generate API keys:
