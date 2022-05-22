@@ -61,5 +61,6 @@ For this tool to work properly, you need to register on the following services a
 - https://threatfox.abuse.ch
 - https://www.ipqualityscore.com
 - https://maltiverse.com
+- https://console.cloud.google.com/apis/credentials
 - https://developer.twitter.com
 - https://www.reddit.com/prefs/apps
