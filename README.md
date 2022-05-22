@@ -16,10 +16,12 @@ IoC type is detected automatically.
 ### Domains
  - Virustotal
  - Alienvault
+ - Google Safe Browsing
  - Twitter
  - Reddit
 ### URLs
  - Virustotal
+ - Google Safe Browsing
  - Twitter
  - Reddit
 ### MD5 hashes
