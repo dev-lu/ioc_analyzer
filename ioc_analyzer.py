@@ -16,7 +16,7 @@ import re
 
 requests.packages.urllib3.disable_warnings()  # Disable SSL warning
 
-ioc = str(input('Enter IoC:\n'))
+ioc = str(input('Enter IoC:\n')).strip()
 
 table           = PrettyTable()
 table.header    = True
@@ -181,8 +181,8 @@ def blocklist_de_ip_check(ip):
     url         = "http://api.blocklist.de/api.php?"
     endpoint    = "ip="
     
-    respose     = requests.get(url=url + endpoint + ip)
-    result      = respose.text.replace("<br />", " ")
+    response     = requests.get(url=url + endpoint + ip)
+    result      = response.text.replace("<br />", " ")
     attacks     = re.search('attacks: (\d+)', result).group(1)
     reports     = re.search('reports: (\d+)', result).group(1)
     result_dict = {
@@ -197,13 +197,13 @@ def blocklist_de_ip_check(ip):
     
     message = f"Attacks: {blocklist_attacks} - Reports: {blocklist_reports}"
     
-    if respose.status_code == 200:
+    if response.status_code == 200:
         if int(blocklist_attacks)<1 and int(blocklist_reports)<1:   table.add_row(["Blocklist.de", message, green])
         else:                                                       table.add_row(["Blocklist.de", message, red])
     
     else:
         print("Error while checking for Blocklist.de results:")
-        print(respose.text)
+        print(response.text)
 
 
 def threatfox_ip_check(ip, apikey):
@@ -372,9 +372,48 @@ def maltiverse_ip_check(ip, apikey):
         table.add_row(["Type", ip_type, white])
         table.add_row(["ISP", ip_isp, white])
 
+def safebrowsing_url_check(ioc):
+    apikey = config('GOOGLE_SAFEBROWSING')
+    url = f"https://safebrowsing.googleapis.com/v4/threatMatches:find?key={apikey}"
+    headers = {'Content-type': 'application/json'}
+    
+    data = {
+        "client": {
+        "clientId":      "IoC Analyzer",
+        "clientVersion": "1.5.2"
+        },
+        "threatInfo": {
+        "threatTypes":      ["MALWARE",
+                            "SOCIAL_ENGINEERING",
+                            "THREAT_TYPE_UNSPECIFIED",
+                            "UNWANTED_SOFTWARE",
+                            "POTENTIALLY_HARMFUL_APPLICATION"],
+        "platformTypes":    ["ANY_PLATFORM"],
+        "threatEntryTypes": ["URL"],
+        "threatEntries": [
+            {"url": f"{ioc}"}
+        ]
+        }
+    }
+
+    response = requests.post(url=url, headers=headers, data=json.dumps(data))
+    response_json = json.loads(response.text)
+
+    if response.status_code == 429:
+        table.add_row(["Google Safebrowsing", "API limit exceeded", black])
+    elif response.status_code == 200:
+        if response_json:
+            threattype = response_json['matches'][0]['threatType']
+            table.add_row(["Google Safebrowsing", threattype, red])
+        else:
+            table.add_row(["Google Safebrowsing", "Clean", green])
+    else :
+        print("Error while checking for Safebrowsing results:")
+        print(response.content)
 
 def search_twitter(ioc:str):
     import tweepy as tw
+    import unicodedata
     twitter_bearer_token    = config('TWITTER_BEARER')
     client                  = tw.Client(bearer_token=twitter_bearer_token)
 
@@ -385,7 +424,7 @@ def search_twitter(ioc:str):
     
     # get tweets from API
     tweets = client.search_recent_tweets(
-        query           = query, 
+        query           = repr(query), 
         tweet_fields    = ['context_annotations', 'created_at', 'author_id', 'public_metrics'], 
         max_results     = 15
     )
@@ -394,11 +433,14 @@ def search_twitter(ioc:str):
     if tweets.data:
         for tweet in tweets.data:
             author = client.get_user(id=tweet.author_id)  # find username by id
-            print(f"Author: {author.data.username}")
-            print(f"Created at:  {tweet.created_at}")
+            author = unicodedata.normalize('NFKD', str(author.data.username)).encode('ascii', 'ignore')
+            created_at = unicodedata.normalize('NFKD', str(tweet.created_at)).encode('ascii', 'ignore')
+            text = unicodedata.normalize('NFKD', str(tweet.text)).encode('ascii', 'ignore')
+            print(f"Author: {author}")
+            print(f"Created at:  {created_at}")
             print(f"Likes: {tweet.public_metrics['like_count']}")
             print(f"Retweets: {tweet.public_metrics['retweet_count']}\n")
-            print(f"{tweet.text}")
+            print(f"Title: {text}")
             print("\n---\n")
         table.add_row(["Twitter", f"{len(tweets.data)} tweet(s)", yellow])
     else: 
@@ -414,7 +456,7 @@ def search_reddit(ioc:str):
         client_secret = config('REDDIT_CLIENT_SECRET'),
         password = config('REDDIT_PASSWORD'),
         user_agent = "python",
-        username = config('REDDIT_USERNAME')
+        username = "securityops2022"
     )
     
     print("\n\n===== Top 15 Reddit results =====\n")
@@ -422,14 +464,14 @@ def search_reddit(ioc:str):
     reddit_sum = sum(1 for x in reddit.subreddit("all").search(ioc))
     
     if reddit_sum:
+        table.add_row(["Reddit", f"{reddit_sum} post(s)", yellow])
         for submission in reddit.subreddit("all").search(ioc, sort="new", limit=15):
             print("")
             print("Autor: " + str(submission.author))
             print("Created at: " + datetime.fromtimestamp(int(submission.created_utc)).strftime('%Y-%m-%d %H:%M:%S'))
             print("Link: " + str(submission.url))
-            print(submission.title)
+            print("Title: " + str(submission.title))
             print("\n---\n")
-        table.add_row(["Reddit", f"{reddit_sum} post(s)", yellow])
     else: 
         print("No results\n\n")
         table.add_row(["Reddit", "0 posts", green])
@@ -442,39 +484,39 @@ if __name__ == "__main__":
         try:
             abuseipdb_ip_check(ioc, config('ABUSEIPDB_APIKEY'))
         except Exception as e:
-            print("\n========== AbuseIPDB error ==========\n")
+            print("\n========== AbuseIPDB error ==========\n" + str(e))
         try:
             ipqualityscore_ip_check(ioc, config('IPQUALITYSCORE_APIKEY'))
         except Exception as e:
-            print("\n========== IPQualityScore error ==========\n")
+            print("\n========== IPQualityScore error ==========\n" + str(e))
         try:
             virustotal(ioc, "ip_addresses", config('VIRUSTOTAL_APIKEY'))
         except Exception as e:
-            print("\n========== Virustotal error ==========\n")
+            print("\n========== Virustotal error ==========\n" + str(e))
         try:
             alienvaultotx(ioc, "IPv4", config('ALIENVAULTOTX_APIKEY'))
         except Exception as e:
-            print("\n========== Alienvault OTX error ==========\n")
+            print("\n========== Alienvault OTX error ==========\n" + str(e))
         try:
             blocklist_de_ip_check(ioc)
         except Exception as e:
-            print("\n========== Blocklist.de error ==========\n")
+            print("\n========== Blocklist.de error ==========\n" + str(e))
         try:
             threatfox_ip_check(ioc, config('THREATFOX_APIKEY'))
         except Exception as e:
-            print("\n========== THREATfox error ==========\n")
+            print("\n========== THREATfox error ==========\n" + str(e))
         try:
             maltiverse_ip_check(ioc, config('MALTIVERSE_APIKEY'))
         except Exception as e:
-            print("\n========== Maltiverse error ==========\n")
+            print("\n========== Maltiverse error ==========\n" + str(e))
         try: 
-            search_twitter(ioc)
-        except: 
-            print("\n========== Twitter error ==========\n")
+            search_twitter(repr(ioc))
+        except Exception as e:
+            print("\n========== Twitter error ==========\n" + str(e))
         try: 
             search_reddit(ioc)
-        except: 
-            print("\n========== Reddit error ==========\n")
+        except Exception as e:
+            print("\n========== Reddit error ==========\n" + str(e))
             
     # Match domain
     elif re.match(r'(?:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\.)+[a-z0-9][a-z0-9-]{0,61}[a-z0-9]', ioc):
@@ -482,36 +524,44 @@ if __name__ == "__main__":
         try:
             virustotal(ioc, "domains", config('VIRUSTOTAL_APIKEY'))
         except Exception as e:
-            print("\n========== Virustotal error ==========\n")
+            print("\n========== Virustotal error ==========\n" + str(e))
         try:
             alienvaultotx(ioc, "domain", config('ALIENVAULTOTX_APIKEY'))
         except Exception as e:
-            print("\n========== Alienvault OTX error ==========\n")
+            print("\n========== Alienvault OTX error ==========\n" + str(e))
         try: 
-            search_twitter(ioc)
-        except: 
-            print("\n========== Twitter error ==========\n")
+            safebrowsing_url_check(ioc)
+        except Exception as e:
+            print("\n========== Google Safebrowsing error ==========\n" + str(e))
+        try: 
+            search_twitter(repr(ioc))
+        except Exception as e:
+            print("\n========== Twitter error ==========\n" + str(e))
         try: 
             search_reddit(ioc)
-        except: 
-            print("\n========== Reddit error ==========\n")
+        except Exception as e:
+            print("\n========== Reddit error ==========\n" + str(e))
         
     # Match URL
     elif re.match(r'https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()!@:%_\+.~#?&\/\/=]*)', ioc):
         table.field_names = ["IoC type: URL", str(ioc), ""]
         try:
-            ioc = base64.urlsafe_b64encode(ioc.encode()).decode().strip("=")
-            virustotal(ioc, "urls", config('VIRUSTOTAL_APIKEY'))
+            ioc_encoded = base64.urlsafe_b64encode(ioc.encode()).decode().strip("=")
+            virustotal(ioc_encoded, "urls", config('VIRUSTOTAL_APIKEY'))
         except Exception as e:
-            print("\n========== Virustotal error ==========\n")
+            print("\n========== Virustotal error ==========\n" + str(e))
         try: 
-            search_twitter(ioc)
-        except: 
-            print("\n========== Twitter error ==========\n")
+            safebrowsing_url_check(ioc)
+        except Exception as e:
+            print("\n========== Google Safebrowsing error ==========\n" + str(e))
         try: 
-            search_reddit(ioc)
-        except: 
-            print("\n========== Reddit error ==========\n")
+            search_twitter(repr(ioc))
+        except Exception as e:
+            print("\n========== Twitter error ==========\n" + str(e))
+        try: 
+            search_reddit(repr(ioc))
+        except Exception as e:
+            print("\n========== Reddit error ==========\n" + str(e))
         
     # Match MD5
     elif re.match(r'(?i)(?<![a-z0-9])[a-f0-9]{32}(?![a-z0-9])', ioc):
@@ -519,23 +569,23 @@ if __name__ == "__main__":
         try:
             virustotal(ioc, "files", config('VIRUSTOTAL_APIKEY'))
         except Exception as e:
-            print("\n========== Virustotal error ==========\n")
+            print("\n========== Virustotal error ==========\n" + str(e))
         try:
             alienvaultotx(ioc, "file", config('ALIENVAULTOTX_APIKEY'))
         except Exception as e:
-            print("\n========== Alienvault OTX error ==========\n")
+            print("\n========== Alienvault OTX error ==========\n" + str(e))
         try:
             threatfox_ip_check(ioc, config('THREATFOX_APIKEY'))
         except Exception as e:
-            print("\n========== THREATfox error ==========\n")
+            print("\n========== THREATfox error ==========\n" + str(e))
         try: 
             search_twitter(ioc)
-        except: 
-            print("\n========== Twitter error ==========\n")
+        except Exception as e:
+            print("\n========== Twitter error ==========\n" + str(e))
         try: 
             search_reddit(ioc)
-        except: 
-            print("\n========== Reddit error ==========\n")
+        except Exception as e:
+            print("\n========== Reddit error ==========\n" + str(e))
      
     # Match SHA1       
     elif re.match(r'(?i)(?<![a-z0-9])[a-f0-9]{40}(?![a-z0-9])', ioc):
@@ -543,23 +593,23 @@ if __name__ == "__main__":
         try:
             virustotal(ioc, "files", config('VIRUSTOTAL_APIKEY'))
         except Exception as e:
-            print("\n========== Virustotal error ==========\n")
+            print("\n========== Virustotal error ==========\n" + str(e))
         try:
             alienvaultotx(ioc, "file", config('ALIENVAULTOTX_APIKEY'))
         except Exception as e:
-            print("\n========== Alienvault OTX error ==========\n")
+            print("\n========== Alienvault OTX error ==========\n" + str(e))
         try:
             threatfox_ip_check(ioc, config('THREATFOX_APIKEY'))
         except Exception as e:
-            print("\n========== THREATfox error ==========\n")
+            print("\n========== THREATfox error ==========\n" + str(e))
         try: 
             search_twitter(ioc)
-        except: 
-            print("\n========== Twitter error ==========\n")
+        except Exception as e:
+            print("\n========== Twitter error ==========\n" + str(e))
         try: 
             search_reddit(ioc)
-        except: 
-            print("\n========== Reddit error ==========\n")
+        except Exception as e:
+            print("\n========== Reddit error ==========\n" + str(e))
          
     # Match SHA256
     elif re.match(r'(?i)(?<![a-z0-9])[a-f0-9]{64}(?![a-z0-9])', ioc):
@@ -567,27 +617,28 @@ if __name__ == "__main__":
         try: 
             virustotal(ioc, "files", config('VIRUSTOTAL_APIKEY'))
         except Exception as e: 
-            print("\n========== Virustotal error ==========\n")
+            print("\n========== Virustotal error ==========\n" + str(e))
         try: 
             alienvaultotx(ioc, "file", config('ALIENVAULTOTX_APIKEY'))
         except Exception as e: 
-            print("\n========== Alienvault OTX error ==========\n")
+            print("\n========== Alienvault OTX error ==========\n" + str(e))
         try: 
             threatfox_ip_check(ioc, config('THREATFOX_APIKEY'))
         except Exception as e: 
-            print("\n========== THREATfox error ==========\n")
+            print("\n========== THREATfox error ==========\n" + str(e))
         try: 
             search_twitter(ioc)
-        except: 
-            print("\n========== Twitter error ==========\n")
+        except Exception as e: 
+            print("\n========== Twitter error ==========\n" + str(e))
         try: 
             search_reddit(ioc)
-        except: 
-            print("\n========== Reddit error ==========\n")
+        except Exception as e: 
+            print("\n========== Reddit error ==========\n" + str(e))
             
     else:
         table.field_names = ["IoC type: Unknown", str(ioc), ""]
         table.add_row(["Error", "IoC type could not be detected", white])
+
 
     table.align = "l"
     print(table)
