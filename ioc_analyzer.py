@@ -541,7 +541,7 @@ def search_reddit(ioc:str):
         client_secret = config('REDDIT_CLIENT_SECRET'),
         password = config('REDDIT_PASSWORD'),
         user_agent = "python",
-        username = "securityops2022"
+        username = config('REDDIT_USERNAME')
     )
     
     print("\n\n===== Top 15 Reddit results =====\n")
