@@ -1,6 +1,6 @@
 # IoC analyzer
 
-Tool to analyze IoCs with various APIs. Prints a detailed report and a summary table on the cli.
+Tool to analyze IoCs with various OSINT APIs. Prints a detailed report and a summary table on the cli.
 IoC type is detected automatically.
 ## Supported IoC types and implemented services:
 ### IP addresses
@@ -22,24 +22,28 @@ IoC type is detected automatically.
 ### URLs
  - Virustotal
  - Google Safe Browsing
+ - URLhaus (abuse.ch)
  - Twitter
  - Reddit
 ### MD5 hashes
  - Virustotal
  - Alienvault
- - THREATfox
+ - THREATfox (abuse.ch)
+ - MALWAREbazaar (abuse.ch)
  - Twitter
  - Reddit
 ### SHA1 hashes
  - Virustotal
  - Alienvault
- - THREATfox
+ - THREATfox (abuse.ch)
+ - MALWAREbazaar (abuse.ch)
  - Twitter
  - Reddit
 ### SHA256 hashes
  - Virustotal
  - Alienvault
- - THREATfox
+ - THREATfox (abuse.ch)
+ - MALWAREbazaar (abuse.ch)
  - Twitter
  - Reddit
 
