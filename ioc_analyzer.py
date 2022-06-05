@@ -1,7 +1,7 @@
 #==============================================
 # Tool to check IoCs againt various threat intelligences.
 # IoC type will be detected automatically.
-# Implmented services: AbuseIPDB, IPQualityScore, Alienvault, Virustotal, Blocklist.de, Maltiverse, Twitter
+# Implmented services: AbuseIPDB, IPQualityScore, Alienvault, Virustotal, THREATfox, URLhaus, MALWAREbazaar, Blocklist.de, Maltiverse, Twitter, Reddit
 # Author: https://github.com/dev-lu
 #==============================================
 from datetime import datetime
@@ -250,6 +250,89 @@ def threatfox_ip_check(ip, apikey):
         print(response.text)
 
 
+def urlhaus_url_check(ioc):
+    url = "https://urlhaus-api.abuse.ch/v1/url/"
+    data = {
+        'url': ioc
+    }
+    response = requests.post(url=url, data=data)
+    if response.status_code == 200:
+        json_response = response.json()
+        if json_response['query_status'] == 'ok':
+            table.add_row(["URLhaus (abuse.ch)", "Malicious", red])
+            print("\n\n========== URLhaus results ==========\n")
+            print("Result ID: " + str(json_response['id']))
+            print("Status: " + str(json_response['url_status']))
+            print("Host: " + str(json_response['host']))
+            print("Date added: " + str(json_response['date_added']))
+            print("Last online: " + str(json_response['last_online']))
+            print("Threat: " + str(json_response['threat']))
+            print("Blacklists: ")
+            pprint(json_response['blacklists'])
+            print("Tags: ")
+            pprint(json_response['tags'])
+            print("Payloads: ")
+            pprint(json_response['payloads'])
+        elif json_response['query_status'] == 'no_results':
+            print("\n\n========== URLhaus results ==========\n")
+            table.add_row(["URLhaus (abuse.ch)", "No results", green])
+            print("No results")
+        else:
+            print("\n\n========== URLhaus results ==========\n")
+            print("URLhaus error")
+            print(response.text)
+    else: 
+        print("URLhaus error")
+        print(response.status_code)
+        print(response.text)
+
+
+def malwarebazaar_hash_check(ioc):
+    url = "https://mb-api.abuse.ch/api/v1/"
+    data = {
+        'query': 'get_info', 
+        'hash': ioc
+        }
+    response = requests.post(url=url, data=data)
+    if response.status_code == 200:
+        json_response = response.json()
+        if json_response['query_status'] == 'ok':
+            table.add_row(["MALWAREbazaar (abuse.ch)", "Malicious", red])
+            print("\n\n========== MALWAREbazaar results ==========\n")
+            print("MD5 hash: " + str(json_response['data'][0]['md5_hash']))
+            print("SHA1 hash: " + str(json_response['data'][0]['sha1_hash']))
+            print("SHA256 hash: " + str(json_response['data'][0]['sha256_hash']))
+            print("SHA3-384 hash: " + str(json_response['data'][0]['sha3_384_hash']))
+            print("ImpHash: " + str(json_response['data'][0]['imphash']))
+            print("Trend Micro Locality Sensitive Hash: " + str(json_response['data'][0]['tlsh']))
+            print("Trend Micro ELF Hash: " + str(json_response['data'][0]['telfhash']))
+            print("Fuzzy hash (ssdeep): " + str(json_response['data'][0]['ssdeep']))
+            print("File type: " + str(json_response['data'][0]['file_type']))
+            print("\nOrigin country: " + str(json_response['data'][0]['origin_country']))
+            print("\nTags: ")
+            pprint(json_response['data'][0]['tags'])
+            print("\nIntelligence: ")
+            pprint(json_response['data'][0]['intelligence'])
+            print("\nFile information: ")
+            pprint(json_response['data'][0]['file_information'])
+            print("\nYara rules: ")
+            pprint(json_response['data'][0]['yara_rules'])
+            print("\nVendor intelligence: ")
+            pprint(json_response['data'][0]['vendor_intel'])
+        elif json_response['query_status'] == 'no_results':
+            print("\n\n========== MALWAREbazaar results ==========\n")
+            table.add_row(["MALWAREbazaar (abuse.ch)", "No results", green])
+            print("No results")
+        else:
+            print("\n\n========== MALWAREbazaar results ==========\n")
+            print("Something went wrong")
+            print(response.text)
+    else: 
+        print("MALWAREbazaar error")
+        print(response.status_code)
+        print(response.text)
+
+
 def maltiverse_ip_check(ip, apikey):
     headers = {
         'Authorization': f'Bearer {apikey}'
@@ -372,6 +455,7 @@ def maltiverse_ip_check(ip, apikey):
         table.add_row(["Type", ip_type, white])
         table.add_row(["ISP", ip_isp, white])
 
+        
 def safebrowsing_url_check(ioc):
     apikey = config('GOOGLE_SAFEBROWSING')
     url = f"https://safebrowsing.googleapis.com/v4/threatMatches:find?key={apikey}"
@@ -411,6 +495,7 @@ def safebrowsing_url_check(ioc):
         print("Error while checking for Safebrowsing results:")
         print(response.content)
 
+        
 def search_twitter(ioc:str):
     import tweepy as tw
     import unicodedata
@@ -554,6 +639,11 @@ if __name__ == "__main__":
             safebrowsing_url_check(ioc)
         except Exception as e:
             print("\n========== Google Safebrowsing error ==========\n" + str(e))
+        try:
+            urlhaus_url_check(ioc)
+        except Exception as e:
+            print("\n========== URLhaus error ==========\n")
+            print(str(e))
         try: 
             search_twitter(repr(ioc))
         except Exception as e:
@@ -578,6 +668,11 @@ if __name__ == "__main__":
             threatfox_ip_check(ioc, config('THREATFOX_APIKEY'))
         except Exception as e:
             print("\n========== THREATfox error ==========\n" + str(e))
+        try:
+            malwarebazaar_hash_check(ioc)
+        except Exception as e:
+            print("\n========== MALWAREbazaar error ==========\n")
+            print(str(e))
         try: 
             search_twitter(ioc)
         except Exception as e:
@@ -602,6 +697,11 @@ if __name__ == "__main__":
             threatfox_ip_check(ioc, config('THREATFOX_APIKEY'))
         except Exception as e:
             print("\n========== THREATfox error ==========\n" + str(e))
+        try:
+            malwarebazaar_hash_check(ioc)
+        except Exception as e:
+            print("\n========== MALWAREbazaar error ==========\n")
+            print(str(e))
         try: 
             search_twitter(ioc)
         except Exception as e:
@@ -626,6 +726,11 @@ if __name__ == "__main__":
             threatfox_ip_check(ioc, config('THREATFOX_APIKEY'))
         except Exception as e: 
             print("\n========== THREATfox error ==========\n" + str(e))
+        try:
+            malwarebazaar_hash_check(ioc)
+        except Exception as e:
+            print("\n========== MALWAREbazaar error ==========\n")
+            print(str(e))
         try: 
             search_twitter(ioc)
         except Exception as e: 
