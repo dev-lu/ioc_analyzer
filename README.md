@@ -53,7 +53,7 @@ IoC type is detected automatically.
 
 
 ### Example output for hashes:
-![ioca_reddit](https://user-images.githubusercontent.com/44299200/168872781-6489932d-9a46-4503-8089-c5792d209e95.png)
+![ioca_sha1](https://user-images.githubusercontent.com/44299200/172066106-01a0a97d-f411-46e4-bdf1-f94a2b61e82a.png)
 ![ioca_twitter](https://user-images.githubusercontent.com/44299200/168872786-ef3c2a87-282b-4145-8350-b1831673b21b.png)
 
 
