@@ -502,7 +502,7 @@ def search_twitter(ioc:str):
     twitter_bearer_token    = config('TWITTER_BEARER')
     client                  = tw.Client(bearer_token=twitter_bearer_token)
 
-    print("\n\n===== Top 15 Twitter results =====\n")
+    print("\n\n========== Top 15 Twitter results ==========\n")
 
     # Define search query and exclude retweets
     query = f'{ioc} -is:retweet'
@@ -544,7 +544,7 @@ def search_reddit(ioc:str):
         username = config('REDDIT_USERNAME')
     )
     
-    print("\n\n===== Top 15 Reddit results =====\n")
+    print("\n\n========== Top 15 Reddit results ==========\n")
 
     reddit_sum = sum(1 for x in reddit.subreddit("all").search(ioc))
     
