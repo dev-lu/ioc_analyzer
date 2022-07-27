@@ -561,7 +561,30 @@ def search_reddit(ioc:str):
         print("No results\n\n")
         table.add_row(["Reddit", "0 posts", green])
         
-        
+
+def check_shodan(ioc:str, method:str):
+    url = "https://api.shodan.io"
+    endpoint = {'ip': '/shodan/host/',  # IP information
+                'domain': '/dns/domain/',  # Subdomains and DNS entrys per Domain
+                'dns_resolve': '/dns/resolve'  # IP for hostname
+                }
+    apikey = config('SHODAN_APIKEY')
+    response = requests.get(url = url + endpoint[method] + ioc + '?key=' + apikey)
+    response_json   = json.loads(response.text)
+    
+    if response.status_code == 200:
+        print("\n\n========== Shodan results ==========\n")
+        print("Country code: " + str(response_json['country_code']))
+        print("Hostnames: " + str(response_json['hostnames']))
+        print("Organisation: " + str(response_json['org']))
+        print("Last update: " + str(response_json['last_update']))
+        print("ASN: " + str(response_json['AS15169']))
+        print("Ports: " + str(response_json['ports']))
+    else:
+        print("Error while checking for Shodan results:")
+        print(response.content)
+
+
 if __name__ == "__main__":
     # Match IP address
     if re.match(r'[0-9]+(?:\.[0-9]+){3}', ioc):
@@ -594,6 +617,10 @@ if __name__ == "__main__":
             maltiverse_ip_check(ioc, config('MALTIVERSE_APIKEY'))
         except Exception as e:
             print("\n========== Maltiverse error ==========\n" + str(e))
+        try: 
+            check_shodan(ioc, 'ip')
+        except Exception as e:  
+            print("\n========== Shodan error ==========\n" + str(e))
         try: 
             search_twitter(repr(ioc))
         except Exception as e:
