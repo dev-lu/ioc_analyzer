@@ -11,6 +11,7 @@ IoC type is detected automatically.
  - Blocklist.de
  - THREATfox (abuse.ch)
  - Maltiverse
+ - Shodan
  - Twitter
  - Reddit
 ### Domains
