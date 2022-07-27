@@ -578,7 +578,7 @@ def check_shodan(ioc:str, method:str):
         print("Hostnames: " + str(response_json['hostnames']))
         print("Organisation: " + str(response_json['org']))
         print("Last update: " + str(response_json['last_update']))
-        print("ASN: " + str(response_json['AS15169']))
+        print("ASN: " + str(response_json['asn']))
         print("Ports: " + str(response_json['ports']))
     else:
         print("Error while checking for Shodan results:")
