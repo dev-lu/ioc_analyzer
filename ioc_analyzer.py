@@ -565,24 +565,38 @@ def search_reddit(ioc:str):
 def check_shodan(ioc:str, method:str):
     url = "https://api.shodan.io"
     endpoint = {'ip': '/shodan/host/',  # IP information
-                'domain': '/dns/domain/',  # Subdomains and DNS entrys per Domain
-                'dns_resolve': '/dns/resolve'  # IP for hostname
+                'domain': '/dns/domain/'  # Subdomains and DNS entrys per Domain
                 }
     apikey = config('SHODAN_APIKEY')
-    response = requests.get(url = url + endpoint[method] + ioc + '?key=' + apikey)
-    response_json   = json.loads(response.text)
     
-    if response.status_code == 200:
-        print("\n\n========== Shodan results ==========\n")
-        print("Country code: " + str(response_json['country_code']))
-        print("Hostnames: " + str(response_json['hostnames']))
-        print("Organisation: " + str(response_json['org']))
-        print("Last update: " + str(response_json['last_update']))
-        print("ASN: " + str(response_json['asn']))
-        print("Ports: " + str(response_json['ports']))
-    else:
-        print("Error while checking for Shodan results:")
-        print(response.content)
+    if method == 'ip':
+        response = requests.get(url = url + endpoint[method] + ioc + '?key=' + apikey)
+        response_json = json.loads(response.text)
+        if response.status_code == 200:
+            print("\n\n========== Shodan results ==========\n")
+            print("Country code: " + str(response_json['country_code']))
+            print("Hostnames: " + str(response_json['hostnames']))
+            print("Organisation: " + str(response_json['org']))
+            print("Last update: " + str(response_json['last_update']))
+            print("ASN: " + str(response_json['asn']))
+            print("Ports: " + str(response_json['ports']))
+            print("Data: ")
+            pprint(response_json['data'])
+        else:
+            print("Error while checking for Shodan results:")
+            print(response.content)
+    elif method == 'domain':
+        response = requests.get(url = url + endpoint[method] + ioc + '?key=' + apikey)
+        response_json = json.loads(response.text)
+        if response.status_code == 200:
+            print("\n\n========== Shodan results ==========\n")
+            print("Tags: " + str(response_json['tags']))
+            print("Subdomains: " + str(response_json['subdomains']))
+            print("Data: ")
+            pprint(response_json['data'])
+        else:
+            print("Error while checking for Shodan results:")
+            print(response.content)
 
 
 if __name__ == "__main__":
@@ -645,6 +659,10 @@ if __name__ == "__main__":
             safebrowsing_url_check(ioc)
         except Exception as e:
             print("\n========== Google Safebrowsing error ==========\n" + str(e))
+        try: 
+            check_shodan(ioc, 'domain')
+        except Exception as e:  
+            print("\n========== Shodan error ==========\n" + str(e))
         try: 
             search_twitter(repr(ioc))
         except Exception as e:
