@@ -18,6 +18,7 @@ IoC type is detected automatically.
  - Virustotal
  - Alienvault
  - Google Safe Browsing
+ - Shodan
  - Twitter
  - Reddit
 ### URLs
