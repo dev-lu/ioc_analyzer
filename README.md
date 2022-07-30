@@ -12,6 +12,7 @@ IoC type is detected automatically.
  - THREATfox (abuse.ch)
  - Maltiverse
  - Shodan
+ - BGPView
  - Twitter
  - Reddit
 ### Domains
