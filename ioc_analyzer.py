@@ -650,6 +650,10 @@ if __name__ == "__main__":
         except Exception as e:  
             print("\n========== Shodan error ==========\n" + str(e))
         try: 
+            check_bgpview(ioc)
+        except Exception as e:  
+            print("\n========== BGPView error ==========\n" + str(e))
+        try: 
             search_twitter(repr(ioc))
         except Exception as e:
             print("\n========== Twitter error ==========\n" + str(e))
