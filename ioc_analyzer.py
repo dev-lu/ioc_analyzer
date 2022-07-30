@@ -599,6 +599,20 @@ def check_shodan(ioc:str, method:str):
             print(response.content)
 
 
+def check_bgpview(ioc:str):
+    url = f"https://api.bgpview.io/ip/{ioc}"
+    #apikey = config('SHODAN_APIKEY')
+    
+    response = requests.get(url = url)
+    response_json = json.loads(response.text)
+    if response.status_code == 200:
+        print("\n\n========== BGPView results ==========\n")
+        pprint(response_json['data'])
+    else:
+        print("Error while checking for BGPView results:")
+        print(response.content)
+
+            
 if __name__ == "__main__":
     # Match IP address
     if re.match(r'[0-9]+(?:\.[0-9]+){3}', ioc):
