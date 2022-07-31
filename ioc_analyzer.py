@@ -333,6 +333,28 @@ def malwarebazaar_hash_check(ioc):
         print(response.text)
 
 
+def check_pulsedive(ioc:str):
+    url = f"https://pulsedive.com/api/"
+    apikey = config('PULSEDIVE_APIKEY')
+    endpoint = f"explore.php?q=ioc%3D{ioc}&limit=10&pretty=1&key={apikey}"
+    
+    global pulsedive_risk
+    
+    response = requests.get(url = url + endpoint)
+    response_json = json.loads(response.text)
+    if response.status_code == 200:
+        if response_json['results']:
+            pulsedive_risk = str(response_json['results'][0]['risk'])
+            if pulsedive_risk == 'none': table.add_row(["Pulsedive risk", "None", green])
+            elif pulsedive_risk == 'low': table.add_row(["Pulsedive risk", "Low", yellow])
+            elif pulsedive_risk == 'high': table.add_row(["Pulsedive risk", "High", red])
+            print("\n\n========== Pulsedive results ==========\n")
+            pprint(response_json['results'][0])
+    else:
+        print("Error while checking for Pulsedive results:")
+        print(response.content)
+
+
 def maltiverse_ip_check(ip, apikey):
     headers = {
         'Authorization': f'Bearer {apikey}'
@@ -653,6 +675,10 @@ if __name__ == "__main__":
             check_bgpview(ioc)
         except Exception as e:  
             print("\n========== BGPView error ==========\n" + str(e))
+        try:
+            check_pulsedive(ioc)
+        except Exception as e:  
+            print("\n========== Pulsedive error ==========\n" + str(e))
         try: 
             search_twitter(repr(ioc))
         except Exception as e:
@@ -681,6 +707,10 @@ if __name__ == "__main__":
             check_shodan(ioc, 'domain')
         except Exception as e:  
             print("\n========== Shodan error ==========\n" + str(e))
+        try:
+            check_pulsedive(ioc)
+        except Exception as e:  
+            print("\n========== Pulsedive error ==========\n" + str(e))
         try: 
             search_twitter(repr(ioc))
         except Exception as e:
@@ -707,6 +737,10 @@ if __name__ == "__main__":
         except Exception as e:
             print("\n========== URLhaus error ==========\n")
             print(str(e))
+        try:
+            check_pulsedive(ioc)
+        except Exception as e:  
+            print("\n========== Pulsedive error ==========\n" + str(e))
         try: 
             search_twitter(repr(ioc))
         except Exception as e:
@@ -736,6 +770,10 @@ if __name__ == "__main__":
         except Exception as e:
             print("\n========== MALWAREbazaar error ==========\n")
             print(str(e))
+        try:
+            check_pulsedive(ioc)
+        except Exception as e:  
+            print("\n========== Pulsedive error ==========\n" + str(e))
         try: 
             search_twitter(ioc)
         except Exception as e:
@@ -765,6 +803,10 @@ if __name__ == "__main__":
         except Exception as e:
             print("\n========== MALWAREbazaar error ==========\n")
             print(str(e))
+        try:
+            check_pulsedive(ioc)
+        except Exception as e:  
+            print("\n========== Pulsedive error ==========\n" + str(e))
         try: 
             search_twitter(ioc)
         except Exception as e:
@@ -794,6 +836,10 @@ if __name__ == "__main__":
         except Exception as e:
             print("\n========== MALWAREbazaar error ==========\n")
             print(str(e))
+        try:
+            check_pulsedive(ioc)
+        except Exception as e:  
+            print("\n========== Pulsedive error ==========\n" + str(e))
         try: 
             search_twitter(ioc)
         except Exception as e: 
