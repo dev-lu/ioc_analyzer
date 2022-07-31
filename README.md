@@ -13,6 +13,7 @@ IoC type is detected automatically.
  - Maltiverse
  - Shodan
  - BGPView
+ - Pulsedive
  - Twitter
  - Reddit
 ### Domains
@@ -20,12 +21,14 @@ IoC type is detected automatically.
  - Alienvault
  - Google Safe Browsing
  - Shodan
+ - Pulsedive
  - Twitter
  - Reddit
 ### URLs
  - Virustotal
  - Google Safe Browsing
  - URLhaus (abuse.ch)
+ - Pulsedive
  - Twitter
  - Reddit
 ### MD5 hashes
@@ -33,6 +36,7 @@ IoC type is detected automatically.
  - Alienvault
  - THREATfox (abuse.ch)
  - MALWAREbazaar (abuse.ch)
+ - Pulsedive
  - Twitter
  - Reddit
 ### SHA1 hashes
@@ -40,6 +44,7 @@ IoC type is detected automatically.
  - Alienvault
  - THREATfox (abuse.ch)
  - MALWAREbazaar (abuse.ch)
+ - Pulsedive
  - Twitter
  - Reddit
 ### SHA256 hashes
@@ -47,6 +52,7 @@ IoC type is detected automatically.
  - Alienvault
  - THREATfox (abuse.ch)
  - MALWAREbazaar (abuse.ch)
+ - Pulsedive
  - Twitter
  - Reddit
 
@@ -70,5 +76,6 @@ For this tool to work properly, you need to register on the following services a
 - https://maltiverse.com
 - https://console.cloud.google.com/apis/credentials
 - https://developer.shodan.io/api
+- https://pulsedive.com/api
 - https://developer.twitter.com
 - https://www.reddit.com/prefs/apps
